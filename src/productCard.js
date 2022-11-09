@@ -5,9 +5,8 @@ import { supabase } from './supabaseClient';
 function ProductCard(props) {
   const product = props.product;
   const [editing, setEditing] = useState(false);
-
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [name, setName] = useState(product.name);
+  const [description, setDescription] = useState(product.description);
 
   async function updateProduct() {
     try {
