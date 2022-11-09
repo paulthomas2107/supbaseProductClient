@@ -9,12 +9,50 @@ import {
   Col,
   Button,
 } from 'react-bootstrap';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ProductCard from './productCard';
+import { supabase } from './supabaseClient';
+
 
 function App() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    getProducts();
+  }, [])
+
+  async function getProducts() {
+    try {
+      const {data, error } = await supabase
+        .from("products")
+        .select("*")
+        .limit(100)
+      if (error) throw error;
+      if (data !== null) {
+        setProducts(data)
+      }
+    } catch (error) {
+      alert(error.message)
+    }
+  }
+
+  async function createProduct() {
+    try {
+      const {data, error } = await supabase
+        .from("products")
+        .insert({
+          name: name,
+          description: description
+
+        }).single()
+      if (error) throw error;
+      window.location.reload()
+    } catch (error) {
+      alert(error.message)
+    }
+  }
 
   return (
     <>
@@ -43,30 +81,17 @@ function App() {
               onChange={(e) => setDescription(e.target.value)}
             />
             <br />
-            <Button>Create Product in Supabase DB</Button>
+            <Button onClick={() => createProduct()}>Create Product</Button>
           </Col>
         </Row>
         <hr></hr>
         <h3>Current Database Items</h3>
         <Row xs={1} lg={3} className="g-4">
-          <Col>
-            <ProductCard></ProductCard>
+          {products.map((product) => (
+            <Col>
+            <ProductCard product={product}></ProductCard>
           </Col>
-          <Col>
-            <ProductCard></ProductCard>
-          </Col>
-          <Col>
-            <ProductCard></ProductCard>
-          </Col>
-          <Col>
-            <ProductCard></ProductCard>
-          </Col>
-          <Col>
-            <ProductCard></ProductCard>
-          </Col>
-          <Col>
-            <ProductCard></ProductCard>
-          </Col>
+          )) }
         </Row>
       </Container>
     </>
