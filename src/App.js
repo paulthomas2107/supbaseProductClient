@@ -13,7 +13,6 @@ import { useState, useEffect } from 'react';
 import ProductCard from './productCard';
 import { supabase } from './supabaseClient';
 
-
 function App() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -21,36 +20,36 @@ function App() {
 
   useEffect(() => {
     getProducts();
-  }, [])
+  }, []);
 
   async function getProducts() {
     try {
-      const {data, error } = await supabase
-        .from("products")
-        .select("*")
-        .limit(100)
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .limit(100);
       if (error) throw error;
       if (data !== null) {
-        setProducts(data)
+        setProducts(data);
       }
     } catch (error) {
-      alert(error.message)
+      alert(error.message);
     }
   }
 
   async function createProduct() {
     try {
-      const {data, error } = await supabase
-        .from("products")
+      const { error } = await supabase
+        .from('products')
         .insert({
           name: name,
-          description: description
-
-        }).single()
+          description: description,
+        })
+        .single();
       if (error) throw error;
-      window.location.reload()
+      window.location.reload();
     } catch (error) {
-      alert(error.message)
+      alert(error.message);
     }
   }
 
@@ -89,9 +88,9 @@ function App() {
         <Row xs={1} lg={3} className="g-4">
           {products.map((product) => (
             <Col>
-            <ProductCard product={product}></ProductCard>
-          </Col>
-          )) }
+              <ProductCard product={product}></ProductCard>
+            </Col>
+          ))}
         </Row>
       </Container>
     </>

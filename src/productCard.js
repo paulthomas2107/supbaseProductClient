@@ -1,12 +1,42 @@
 import { Card, Button, Form } from 'react-bootstrap';
 import { useState } from 'react';
+import { supabase } from './supabaseClient';
 
 function ProductCard(props) {
-
   const product = props.product;
   const [editing, setEditing] = useState(false);
+
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+
+  async function updateProduct() {
+    try {
+      const { error } = await supabase
+        .from('products')
+        .update({
+          name: name,
+          description: description,
+        })
+        .eq('id', product.id);
+      if (error) throw error;
+      window.location.reload();
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
+  async function deleteProduct() {
+    try {
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', product.id);
+      if (error) throw error;
+      window.location.reload();
+    } catch (error) {
+      alert(error.message);
+    }
+  }
 
   return (
     <Card style={{ width: '18rem' }}>
@@ -15,7 +45,9 @@ function ProductCard(props) {
           <>
             <Card.Title>{product.name}</Card.Title>
             <Card.Text>{product.description}</Card.Text>
-            <Button variant="danger">Delete Product</Button>
+            <Button variant="danger" onClick={() => deleteProduct()}>
+              Delete Product
+            </Button>
             <Button variant="secondary" onClick={() => setEditing(true)}>
               Edit Product
             </Button>
@@ -42,7 +74,7 @@ function ProductCard(props) {
               onChange={(e) => setDescription(e.target.value)}
             />
             <br />
-            <Button>Create Product</Button>
+            <Button onClick={() => updateProduct()}>Update Product</Button>
           </>
         )}
       </Card.Body>
